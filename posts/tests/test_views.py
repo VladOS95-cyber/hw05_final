@@ -221,6 +221,7 @@ class ViewTest(TestCase):
             )
     
     def test_follow_and_unfollow(self):
+        """Тест подписок и отписок."""
         Follow.objects.create(user=self.authorized_client, author=self.post_author)
         followers = Follow.objects.filter(author=self.post_author).count()
         follows = Follow.objects.filter(user=self.post_author).count()
