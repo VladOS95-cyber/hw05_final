@@ -85,16 +85,14 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Имя автора',
         related_name='comments',
-        help_text = 'Имя автора добавляется автоматически'
-    )
+        help_text = 'Имя автора добавляется автоматически')
     text = models.TextField(
         verbose_name='Текст коммента', 
         help_text = 'Напишите комментарий')
     created = models.DateTimeField(
         verbose_name='Дата комментария', 
         auto_now_add=True,
-        help_text = 'Дата добавляется автоматически'
-        )
+        help_text = 'Дата добавляется автоматически')
 
 class Follow(models.Model):
     """Модель для подписок/подписчиков на авторов постов."""
@@ -103,14 +101,12 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Имя подписчика',
         related_name='follower',
-        help_text = 'Имя подписчика добавляется автоматически'
-    )
+        help_text = 'Имя подписчика добавляется автоматически')
     author = models.ForeignKey(
         User, 
         on_delete=models.CASCADE,
         verbose_name='Имя подписанта',
         related_name='following',
-        help_text = 'Имя автора добавляется автоматически'
-    )
+        help_text = 'Имя автора добавляется автоматически')
     class Meta:
         unique_together = ['user', 'author']

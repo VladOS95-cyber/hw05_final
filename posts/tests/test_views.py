@@ -22,40 +22,33 @@ class ViewTest(TestCase):
                 b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
                 b'\x00\x00\x00\x2C\x00\x00\x00\x00'
                 b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-                b'\x0A\x00\x3B'
-        )
+                b'\x0A\x00\x3B')
         uploaded = SimpleUploadedFile(
             name='small.gif',
             content=small_gif,
-            content_type='image/gif'
-        )
+            content_type='image/gif')
         cls.group = Group.objects.create(            
             title='Группа для теста',
             slug='test-group',
-            description='Группа для теста'
-        )
+            description='Группа для теста')
         cls.group_01 = Group.objects.create(            
             title='Группа для теста 01',
             slug='test-group01',
-            description='Группа01 для теста'
-        )
+            description='Группа01 для теста')
         cls.post = Post.objects.create(
             text = 'Текст теста',
             author = cls.user_author,
-            group = cls.group,
-        )
+            group = cls.group,)
         cls.post_01 = Post.objects.create(
             text = 'Текст теста01',
             author = cls.user_author,
             group = cls.group_01,
-            image = uploaded
-        )
+            image = uploaded)
         cls.post_02 = Post.objects.create(
             text = 'Текст теста01',
             author = cls.another_user_author,
             group = cls.group_01,
-            image = uploaded
-        )
+            image = uploaded)
     
     def setUp(self):
         self.guest_client = Client()
@@ -75,8 +68,7 @@ class ViewTest(TestCase):
             {'slug': ViewTest.group.slug}),
             'new.html': reverse('new_post'),
             'about/author.html': reverse('about:author'),
-            'about/tech.html': reverse('about:tech')
-        }
+            'about/tech.html': reverse('about:tech')}
         for template, reverse_name in templates_pages_name.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
@@ -103,8 +95,7 @@ class ViewTest(TestCase):
         models_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
-            'image': forms.fields.ImageField
-        }
+            'image': forms.fields.ImageField}
         for value, expected in models_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
@@ -222,6 +213,16 @@ class ViewTest(TestCase):
     
     def test_follow_and_unfollow(self):
         """Тест подписок и отписок."""
-        Follow.objects.create(user=self.authorized_client, author=self.post_author)
-        followers = Follow.objects.filter(author=self.post_author).count()
-        follows = Follow.objects.filter(user=self.post_author).count()
+        Follow.objects.create(user=self.user, author=ViewTest.user_author)
+        self.assertTrue(Follow.objects.filter(author=ViewTest.user_author).exists())
+        Follow.objects.filter(user=self.user, author=ViewTest.user_author).delete()
+        self.assertFalse(Follow.objects.filter(author=ViewTest.user_author).exists())
+    
+    def test_new_post_with_follows_author_is_correct(self):
+        """Сформированный пост на подписанного автора
+        отображается в ленте подписчиков."""
+        Follow.objects.create(user=self.user, author=ViewTest.user_author)
+        response = self.authorized_client.get(reverse('follow_index'))
+        index = response.context.get('page')[0].text
+        expected = ViewTest.post.text
+        self.assertEqual(index, expected)

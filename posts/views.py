@@ -4,8 +4,6 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
-from django.views.decorators.cache import cache_page
-
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post
 
@@ -22,11 +20,9 @@ def index(request):
     page = paginator.get_page(page_number)
     return render(request, 'index.html', {'page': page, 'paginator': paginator})
 
-
 def group_posts(request, slug):
     """Функция возвращает страницу сообщества
-    и выводит до 12 записей на странице.
-    """
+    и выводит до 12 записей на странице."""
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.all()
     paginator = Paginator(posts, POSTS_PER_PAGE)
@@ -39,7 +35,6 @@ def group_posts(request, slug):
         'posts': posts, 
         'page': page, 
         'paginator': paginator})
-
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
@@ -64,7 +59,6 @@ def profile(request, username):
         'followers': followers,
         'follows': follows})
 
-
 def post_view(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     comments = Comment.objects.filter(post_id=post_id)
@@ -87,7 +81,6 @@ def post_view(request, username, post_id):
         'followers': followers,
         'follows': follows})
 
-
 @login_required
 def new_post(request):
     form = PostForm(request.POST or None,
@@ -98,7 +91,6 @@ def new_post(request):
     post.author = request.user
     form.save()
     return redirect(reverse('index'))
-
 
 @login_required
 def post_edit(request, username, post_id):
@@ -121,7 +113,6 @@ def post_edit(request, username, post_id):
             'post_id': post_id, 
             }))
 
-
 def page_not_found(request, exception=None):
     return render(
         request, 
@@ -130,10 +121,8 @@ def page_not_found(request, exception=None):
         status=404
     )
 
-
 def server_error(request):
     return render(request, 'misc/500.html', status=500)
-
 
 @login_required
 def add_comment(request, username, post_id):
@@ -154,7 +143,6 @@ def add_comment(request, username, post_id):
             'post_id': post_id, 
             }))
 
-
 @login_required
 def follow_index(request):
     post_list = Post.objects.filter(author__following__user=request.user)
@@ -165,7 +153,6 @@ def follow_index(request):
         'page': page, 
         'paginator': paginator})
 
-
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
@@ -173,7 +160,6 @@ def profile_follow(request, username):
         user=request.user, author=author).exists():
         Follow.objects.create(user=request.user, author=author)
     return profile(request, username)
-
 
 @login_required
 def profile_unfollow(request, username):
