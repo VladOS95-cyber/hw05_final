@@ -119,7 +119,8 @@ class URLTests(TestCase):
             f'/{URLTests.user_author.username}/{URLTests.post.id}/edit/',
             follow=True
         )
-        self.assertRedirects(response_guest,
+        self.assertRedirects(
+            response_guest,
             f'/auth/login/?next=/{URLTests.user_author.username}/{URLTests.post.id}/edit/'
         )
         self.assertRedirects(respone_authorized, reverse('index'))
