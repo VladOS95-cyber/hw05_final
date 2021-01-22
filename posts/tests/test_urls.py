@@ -92,10 +92,9 @@ class URLTests(TestCase):
 
     def test_urls_uses_correct_template(self):
         """Тест вызова HTML шаблонов."""
-        templates_url_names={
+        templates_url_names = {
             'index.html': '/',
             'group.html': '/group/test-group/',
-            'new.html': '/new/',
             'new.html':
                 f'/{URLTests.user_author.username}/{URLTests.post.id}/edit/',
             'post.html':
@@ -120,8 +119,7 @@ class URLTests(TestCase):
             f'/{URLTests.user_author.username}/{URLTests.post.id}/edit/',
             follow=True
         )
-        self.assertRedirects(
-            response_guest,
+        self.assertRedirects(response_guest,
             f'/auth/login/?next=/{URLTests.user_author.username}/{URLTests.post.id}/edit/'
         )
         self.assertRedirects(respone_authorized, reverse('index'))
