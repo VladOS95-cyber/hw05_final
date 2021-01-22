@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+  <main role="main" class="container">
+      <div class="row">
+          <!-- Левый вспомогательный блок -->
+          <div class="col-md-3 mb-3 mt-1">
+              <div class="card">
+                  <div class="card-body">
+                      <ul class="list-group list-group-flush">
+                          <li class="list-group-item">
+                              <div class="h3">
+                                  Об авторе
+                              </div> 
+                          </li>
+                          <li class="list-group-item">
+                              <div class="h7 text-dark">
+                                  Hey hi! Меня зовут Влад, я разработчик
+                                  в компании Microsoft и моя мечта работать в компании Илона Маска - SpaceX. 
+                                  Моя жизнь связана с космосом и ракетостроением, так как почти вся семья жила
+                                  и работала на Байконуре, в космической отрасли. Вот и до меня дошло, 
+                                  и именно поэтому стал заниматься программированием
+                              </div>
+                          </li>
+                      </ul>                                               
+                  </div>                    
+              </div>                
+          </div>
+          <!-- Тело страницы -->
+          <div class="col-md-9">
+              <div class="card-body">                    
+                  <div class="card-text">
+                      <p><img src="\static\spacex.jpg" width="1000" height="550"></p>
+                  </div>                    
+              </div>                
+          </div>            
+      </div>        
+  </main>
+{% endblock %} 

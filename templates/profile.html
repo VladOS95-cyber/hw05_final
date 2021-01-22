@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ author.username }}{% endblock %}
+{% block content %}
+{% load thumbnail %}
+<h1>Профиль пользователя {{ author.username }}</h1>
+<main role="main" class="container"> 
+        <div class="row"> 
+        {% include "includes/author.html" %} 
+<div class="col-md-9">
+<!-- Начало блока с отдельным постом --> 
+        {% include "includes/post_item.html" %}
+<!-- Конец блока с отдельным постом -->             
+<!-- Остальные посты --> 
+<div class="card mb-3 mt-1 shadow-sm">
+     <div class="card-body"> 
+        <p class="card-text">       
+        {% for post in page %}
+                {% include "includes/post_item.html" with post=post %}
+        {% endfor %}
+        </p>
+     </div>
+   </div>
+</main> 
+{% if page.has_other_pages %}
+    {% include "includes/paginator.html" with page=page paginator=paginator%}
+{% endif %}
+{% endblock %}
