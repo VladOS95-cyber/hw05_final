@@ -3,9 +3,8 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.cache import cache
 
-from posts.models import Comment, Post, Group
+from posts.models import Follow, Post, Group
 
 
 User = get_user_model()
@@ -221,3 +220,7 @@ class ViewTest(TestCase):
             'Что-то пошло не так'
             )
     
+    def test_follow_and_unfollow(self):
+        Follow.objects.create(user=self.authorized_client, author=self.post_author)
+        followers = Follow.objects.filter(author=self.post_author).count()
+        follows = Follow.objects.filter(user=self.post_author).count()
