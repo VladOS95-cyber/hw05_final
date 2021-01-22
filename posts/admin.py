@@ -11,7 +11,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    """Регистрация/создание сообщества 
+    """Регистрация/создание сообщества
     в админке сайта."""
     list_display = ('pk', 'title', 'slug', 'description')
     search_fields = ('title',)

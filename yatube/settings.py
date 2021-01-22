@@ -1,6 +1,5 @@
 import os
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'oj+0ni%j86qq%p7dhpk1m+m^87)!=&%o85%mni+ka&fk4ntg3#'

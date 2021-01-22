@@ -1,10 +1,9 @@
-from django.test import Client, TestCase
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase
+from django.urls import reverse
 
-from posts.models import Comment, Post, Group
-
+from posts.models import Comment, Group, Post
 
 User = get_user_model()
 
@@ -14,18 +13,17 @@ class PostFormTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user_author = User.objects.create(username='VladOs')
-        cls.group = Group.objects.create(            
+        cls.group = Group.objects.create(
             title='Группа для теста',
             slug='test-group',
             description='Группа для теста'
         )
         cls.post = Post.objects.create(
-            text = 'Текст теста',
-            author = cls.user_author,
-            group = cls.group,
+            text='Текст теста',
+            author=cls.user_author,
+            group=cls.group,
         )
-    
-    
+
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostFormTest.user_author)
@@ -35,7 +33,8 @@ class PostFormTest(TestCase):
     def test_new_post_creation(self):
         """Проверка создания нового поста."""
         post_count = Post.objects.count()
-        small_gif = (b'\x47\x49\x46\x38\x39\x61\x02\x00'
+        small_gif = (
+                b'\x47\x49\x46\x38\x39\x61\x02\x00'
                 b'\x01\x00\x80\x00\x00\x00\x00\x00'
                 b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
                 b'\x00\x00\x00\x2C\x00\x00\x00\x00'
@@ -59,7 +58,7 @@ class PostFormTest(TestCase):
         self.assertRedirects(response, reverse('index'))
         self.assertEqual(Post.objects.count(), post_count + 1)
         self.assertTrue(Post.objects.filter(text='Тестовый текст').exists())
-    
+
     def test_post_edit(self):
         """Проверка редактирования поста."""
         username = self.user_author.username
@@ -70,12 +69,16 @@ class PostFormTest(TestCase):
         }
         self.authorized_client.post(
             reverse('post_edit', kwargs={
-            'username': username,
-            'post_id': post_id}),
+                'username': username,
+                'post_id': post_id}
+            ),
             data=form_data,
             follow=True
-            )
-        self.assertNotEqual(Post.objects.filter(text='Тестовый текст'), form_data['text'])
+        )
+        self.assertNotEqual(Post.objects.filter(
+            text='Тестовый текст'),
+            form_data['text']
+        )
         self.assertEqual(Post.objects.count(), post_count)
 
     def test_comment(self):
@@ -86,9 +89,10 @@ class PostFormTest(TestCase):
         form_data = {'text': 'Текст тестового комментария'}
         self.authorized_client.post(
             reverse('add_comment', kwargs={
-            'username': username,
-            'post_id': post_id}),
+                'username': username,
+                'post_id': post_id}
+            ),
             data=form_data,
             follow=True,
-            )
+        )
         self.assertEqual(Comment.objects.count(), comments_count + 1)

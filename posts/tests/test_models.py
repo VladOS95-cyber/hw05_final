@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from posts.models import Post, Group
-
+from posts.models import Group, Post
 
 User = get_user_model()
 
@@ -13,22 +12,22 @@ class ModelsTest(TestCase):
         super().setUpClass()
         cls.user_author = User.objects.create(username='VladOs')
         cls.group = Group.objects.create(
-            title = 'Тестовое название группы',
-            description = 'Тестовое описание группы',
-            slug = 'test-group'
+            title='Тестовое название группы',
+            description='Тестовое описание группы',
+            slug='test-group'
         )
         Post.objects.create(
-            text = 'т' * 50,
-            author = cls.user_author,
-            group = cls.group
+            text='т' * 50,
+            author=cls.user_author,
+            group=cls.group
         )
         cls.post = Post.objects.get(id=1)
-    
+
     def test_object_text_len_field(self):
         post = ModelsTest.post
         expected_test = post.text[:15]
         self.assertEquals(expected_test, str(post))
-    
+
     def test_object_title_is_str_field(self):
         group = ModelsTest.group
         expected_object_title = group.title
@@ -47,7 +46,7 @@ class ModelsTest(TestCase):
             with self.subTest(value=value):
                 self.assertEqual(
                     post._meta.get_field(value).verbose_name, expected)
-    
+
     def test_help_text(self):
         """help_text поля совпадает с ожидаемым."""
         post = ModelsTest.post
