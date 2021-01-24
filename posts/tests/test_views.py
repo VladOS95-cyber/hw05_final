@@ -246,7 +246,7 @@ class ViewTest(TestCase):
             str(html_0.content),
             str(html_2.content),
             )
-        
+
     def test_follow(self):
         """Тест подписок."""
         Follow.objects.create(user=self.user, author=ViewTest.user_author)
