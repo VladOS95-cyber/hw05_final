@@ -12,7 +12,5 @@
     {% endfor %}
 {% endcache %}
 </div>
-{% if page.has_other_pages %}
-    {% include "includes/paginator.html" with items=page paginator=paginato %}
-{% endif %}
+{% include "includes/paginator.html" with items=page paginator=paginato %}
 {% endblock %} 

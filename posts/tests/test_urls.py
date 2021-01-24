@@ -64,8 +64,7 @@ class URLTests(TestCase):
             f'/{URLTests.user_author.username}/': 200,
             f'/{URLTests.user_author.username}/{URLTests.post.id}/': 200,
             f'/{URLTests.user_author.username}/{URLTests.post.id}/edit/': 302,
-            '/Несуществующее имя/': 404,
-            f'/{URLTests.user_author.username}/{URLTests.post.id}/comment': 302
+            '/Несуществующее имя/': 404
         }
         for url, code in urls_pages_names.items():
             response = self.guest_client.get(url)
@@ -83,8 +82,7 @@ class URLTests(TestCase):
             f'/{URLTests.user_author.username}/': 200,
             f'/{URLTests.user_author.username}/{URLTests.post.id}/': 200,
             f'/{URLTests.user_author.username}/{URLTests.post.id}/edit/': 302,
-            '/Несуществующее имя/': 404,
-            f'/{URLTests.user_author.username}/{URLTests.post.id}/comment': 200
+            '/Несуществующее имя/': 404
         }
         for url, code in urls_pages_names.items():
             response = self.authorized_client.get(url)

@@ -32,9 +32,8 @@ def group_posts(request, slug):
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    posts_quantity = paginator.count
     return render(request, 'group.html', {
-        'posts_quantity': posts_quantity,
+        'posts_quantity': paginator.count,
         'group': group,
         'posts': posts,
         'page': page,
@@ -48,20 +47,19 @@ def profile(request, username):
     paginator = Paginator(post_list, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    posts_quantity = paginator.count
-    following = False
+    is_following = False
     if request.user.is_authenticated:
-        following = Follow.objects.filter(
+        is_following = Follow.objects.filter(
             user=request.user,
             author=author).exists()
-    followers = Follow.objects.filter(author=author).count()
-    follows = Follow.objects.filter(user=author).count()
+    followers = author.following.count()
+    follows = author.follower.count()
     return render(request, 'profile.html', {
-        'posts_quantity': posts_quantity,
+        'posts_quantity': paginator.count,
         'page': page,
         'author': author,
         'paginator': paginator,
-        'following': following,
+        'following': is_following,
         'followers': followers,
         'follows': follows}
     )
@@ -70,7 +68,7 @@ def profile(request, username):
 def post_view(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     comments = Comment.objects.filter(post_id=post_id)
-    form = CommentForm(request.POST or None)
+    form = CommentForm()
     posts_quantity = post.author.posts.all().count
     following = False
     if request.user.is_authenticated:
@@ -102,7 +100,7 @@ def new_post(request):
     post = form.save(commit=False)
     post.author = request.user
     form.save()
-    return redirect(reverse('index'))
+    return redirect('index')
 
 
 @login_required
@@ -148,12 +146,6 @@ def server_error(request):
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm(request.POST or None)
-    context = {
-        'post': post,
-        'form': form
-    }
-    if not form.is_valid():
-        return render(request, 'includes/comments.html', context)
     comment = form.save(commit=False)
     comment.author = request.user
     comment.post = post

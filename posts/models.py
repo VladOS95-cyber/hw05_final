@@ -78,10 +78,9 @@ class Comment(models.Model):
     """Модель для создания комментарий к постам."""
     post = models.ForeignKey(
         Post,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name='Пост',
         help_text='Комментируемый пост',
-        blank=True, null=True,
         related_name='comments'
     )
     author = models.ForeignKey(

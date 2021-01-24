@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -174,7 +175,7 @@ class ViewTest(TestCase):
         expected_post = ViewTest.post
         expected_author = ViewTest.post.author
         expected_image = ViewTest.post_02.image
-        page_context = response.context.get('page')[0]
+        page_context = response.context.get('page')[1]
         page_context_author = response.context.get('post').author
         page_context_image = response2.context.get('page')[0].image
         self.assertEqual(page_context, expected_post)
@@ -229,19 +230,32 @@ class ViewTest(TestCase):
     def test_cache(self):
         """Тест кэша """
         html_0 = self.guest_client.get('/')
+        Post.objects.create(
+            text='Труляля',
+            author=ViewTest.user_author,
+            group=ViewTest.group
+        )
         html_1 = self.guest_client.get('/')
         self.assertHTMLEqual(
             str(html_0.content),
             str(html_1.content),
-            'Что-то пошло не так'
             )
-
-    def test_follow_and_unfollow(self):
-        """Тест подписок и отписок."""
+        cache.clear()
+        html_2 = self.guest_client.get('/')
+        self.assertHTMLNotEqual(
+            str(html_0.content),
+            str(html_2.content),
+            )
+        
+    def test_follow(self):
+        """Тест подписок."""
         Follow.objects.create(user=self.user, author=ViewTest.user_author)
         self.assertTrue(
             Follow.objects.filter(author=ViewTest.user_author).exists()
         )
+
+    def test_unfollow(self):
+        """Тест отписок."""
         Follow.objects.filter(
             user=self.user, author=ViewTest.user_author).delete()
         self.assertFalse(
@@ -251,8 +265,13 @@ class ViewTest(TestCase):
     def test_new_post_with_follows_author_is_correct(self):
         """Сформированный пост на подписанного автора
         отображается в ленте подписчиков."""
+        Post.objects.create(
+            text='тест1',
+            author=ViewTest.user_author,
+            group=ViewTest.group
+        )
         Follow.objects.create(user=self.user, author=ViewTest.user_author)
         response = self.authorized_client.get(reverse('follow_index'))
-        index = response.context.get('page')[0].text
-        expected = ViewTest.post.text
-        self.assertEqual(index, expected)
+        response2 = self.another_post_author.get(reverse('follow_index'))
+        self.assertContains(response, 'тест1')
+        self.assertNotContains(response2, 'тест1')

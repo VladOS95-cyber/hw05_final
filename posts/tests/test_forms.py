@@ -25,6 +25,7 @@ class PostFormTest(TestCase):
         )
 
     def setUp(self):
+        self.guest_client = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(PostFormTest.user_author)
         self.post_author = Client()
@@ -95,4 +96,13 @@ class PostFormTest(TestCase):
             data=form_data,
             follow=True,
         )
+        self.guest_client.post(
+            reverse('add_comment', kwargs={
+                'username': username,
+                'post_id': post_id}
+            ),
+            data=form_data,
+            follow=True,
+        )
         self.assertEqual(Comment.objects.count(), comments_count + 1)
+        self.assertNotEqual(Comment.objects.count(), comments_count + 2)
