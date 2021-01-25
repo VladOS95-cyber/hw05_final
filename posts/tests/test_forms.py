@@ -96,6 +96,14 @@ class PostFormTest(TestCase):
             data=form_data,
             follow=True,
         )
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
+    
+    def test_comment(self):
+        """Не авториз. пользователь не может комментировать посты."""
+        username = self.user_author.username
+        post_id = PostFormTest.post.id
+        comments_count = Comment.objects.count()
+        form_data = {'text': 'Текст тестового комментария'}
         self.guest_client.post(
             reverse('add_comment', kwargs={
                 'username': username,
@@ -104,5 +112,4 @@ class PostFormTest(TestCase):
             data=form_data,
             follow=True,
         )
-        self.assertEqual(Comment.objects.count(), comments_count + 1)
         self.assertNotEqual(Comment.objects.count(), comments_count + 2)

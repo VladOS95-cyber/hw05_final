@@ -122,11 +122,9 @@ def post_edit(request, username, post_id):
         )
     post = form.save(commit=False)
     form.save()
-    return redirect(reverse('post', kwargs={
-            'username': username,
-            'post_id': post_id,
-            })
-        )
+    return redirect('post', 
+        username=username, 
+        post_id=post_id)
 
 
 def page_not_found(request, exception=None):
@@ -146,15 +144,15 @@ def server_error(request):
 def add_comment(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author__username=username)
     form = CommentForm(request.POST or None)
+    if request.method == 'GET' or not form.is_valid():
+        return render(request, 'post.html', {'form': form})
     comment = form.save(commit=False)
     comment.author = request.user
     comment.post = post
     form.save()
-    return redirect(reverse('post', kwargs={
-            'username': username,
-            'post_id': post_id,
-            })
-        )
+    return redirect('post', 
+        username=username, 
+        post_id=post_id)
 
 
 @login_required

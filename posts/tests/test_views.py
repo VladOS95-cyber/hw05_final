@@ -172,7 +172,7 @@ class ViewTest(TestCase):
                 'username': username2
             })
         )
-        expected_post = ViewTest.post
+        expected_post = ViewTest.post_01
         expected_author = ViewTest.post.author
         expected_image = ViewTest.post_02.image
         page_context = response.context.get('page')[1]
@@ -248,19 +248,22 @@ class ViewTest(TestCase):
             )
 
     def test_follow(self):
-        """Тест подписок."""
-        Follow.objects.create(user=self.user, author=ViewTest.user_author)
+        """Тест подписок.""" 
+        author = ViewTest.post.author
+        username = author.username
+        self.authorized_client.get(reverse('profile_follow', kwargs={'username':username}))
         self.assertTrue(
-            Follow.objects.filter(author=ViewTest.user_author).exists()
-        )
+            Follow.objects.filter(author=author).exists())
 
     def test_unfollow(self):
         """Тест отписок."""
-        Follow.objects.filter(
-            user=self.user, author=ViewTest.user_author).delete()
-        self.assertFalse(
-            Follow.objects.filter(author=ViewTest.user_author).exists()
+        author = ViewTest.post.author
+        username = author.username
+        self.authorized_client.get(reverse('profile_unfollow', kwargs={
+            'username':username})
         )
+        self.assertFalse(
+            Follow.objects.filter(author=author).exists())
 
     def test_new_post_with_follows_author_is_correct(self):
         """Сформированный пост на подписанного автора
@@ -272,6 +275,15 @@ class ViewTest(TestCase):
         )
         Follow.objects.create(user=self.user, author=ViewTest.user_author)
         response = self.authorized_client.get(reverse('follow_index'))
-        response2 = self.another_post_author.get(reverse('follow_index'))
         self.assertContains(response, 'тест1')
-        self.assertNotContains(response2, 'тест1')
+
+    def test_new_post_with_follows_author_is_correct(self):
+        """Сформированный пост не отображается в ленте тех,
+        кто на него не подписан."""
+        Post.objects.create(
+            text='тест2',
+            author=ViewTest.user_author,
+            group=ViewTest.group
+        )
+        response = self.another_post_author.get(reverse('follow_index'))
+        self.assertNotContains(response, 'тест2')
