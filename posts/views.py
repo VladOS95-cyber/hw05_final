@@ -122,9 +122,7 @@ def post_edit(request, username, post_id):
         )
     post = form.save(commit=False)
     form.save()
-    return redirect('post', 
-        username=username, 
-        post_id=post_id)
+    return redirect('post', username=username, post_id=post_id)
 
 
 def page_not_found(request, exception=None):
@@ -150,9 +148,7 @@ def add_comment(request, username, post_id):
     comment.author = request.user
     comment.post = post
     form.save()
-    return redirect('post', 
-        username=username, 
-        post_id=post_id)
+    return redirect('post', username=username, post_id=post_id)
 
 
 @login_required

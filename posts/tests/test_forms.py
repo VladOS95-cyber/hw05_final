@@ -97,8 +97,8 @@ class PostFormTest(TestCase):
             follow=True,
         )
         self.assertEqual(Comment.objects.count(), comments_count + 1)
-    
-    def test_comment(self):
+
+    def test_comment_not_authrorized(self):
         """Не авториз. пользователь не может комментировать посты."""
         username = self.user_author.username
         post_id = PostFormTest.post.id

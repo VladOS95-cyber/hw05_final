@@ -248,10 +248,12 @@ class ViewTest(TestCase):
             )
 
     def test_follow(self):
-        """Тест подписок.""" 
+        """Тест подписок."""
         author = ViewTest.post.author
         username = author.username
-        self.authorized_client.get(reverse('profile_follow', kwargs={'username':username}))
+        self.authorized_client.get(reverse('profile_follow', kwargs={
+            'username': username})
+        )
         self.assertTrue(
             Follow.objects.filter(author=author).exists())
 
@@ -260,7 +262,7 @@ class ViewTest(TestCase):
         author = ViewTest.post.author
         username = author.username
         self.authorized_client.get(reverse('profile_unfollow', kwargs={
-            'username':username})
+            'username': username})
         )
         self.assertFalse(
             Follow.objects.filter(author=author).exists())
@@ -277,7 +279,7 @@ class ViewTest(TestCase):
         response = self.authorized_client.get(reverse('follow_index'))
         self.assertContains(response, 'тест1')
 
-    def test_new_post_with_follows_author_is_correct(self):
+    def test_new_post_with_unfollows_author(self):
         """Сформированный пост не отображается в ленте тех,
         кто на него не подписан."""
         Post.objects.create(
