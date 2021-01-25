@@ -261,6 +261,7 @@ class ViewTest(TestCase):
         """Тест отписок."""
         author = ViewTest.post.author
         username = author.username
+        Follow.objects.create(user=self.user, author=author)
         self.authorized_client.get(reverse('profile_unfollow', kwargs={
             'username': username})
         )
