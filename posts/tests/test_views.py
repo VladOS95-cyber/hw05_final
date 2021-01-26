@@ -255,7 +255,7 @@ class ViewTest(TestCase):
             'username': username})
         )
         self.assertTrue(
-            Follow.objects.filter(author=author).exists())
+            Follow.objects.filter(user=self.user, author=author).exists())
 
     def test_unfollow(self):
         """Тест отписок."""
@@ -266,7 +266,7 @@ class ViewTest(TestCase):
             'username': username})
         )
         self.assertFalse(
-            Follow.objects.filter(author=author).exists())
+            Follow.objects.filter(user=self.user, author=author).exists())
 
     def test_new_post_with_follows_author_is_correct(self):
         """Сформированный пост на подписанного автора
